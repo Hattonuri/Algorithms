@@ -54,7 +54,7 @@
     }                                                                                      \
 }                                                                                          \
 
-template<typename ValueType>
+template<typename ValueType = double>
 class Matrix {
  public:
     using container_type = std::vector<std::vector<ValueType>>;
@@ -120,6 +120,8 @@ class Matrix {
     Matrix Transponed() const;
 
     Matrix& Transpone();
+
+    Matrix& Pow(size_t pow) const;
  private:
     container_type contents;
 };
@@ -273,7 +275,7 @@ Matrix<ValueType> Matrix<ValueType>::operator/(ValueType other) const {
 template<typename ValueType>
 ValueType Matrix<ValueType>::Tr() const {
     ValueType ans{};
-    for (size_t i = 0; i < std::min(Rows(), Columns()); ++i) {
+    for (size_t i = 0; i != std::min(Rows(), Columns()); ++i) {
         ans += contents[i][i];
     }
     return ans;
@@ -283,8 +285,8 @@ template<typename ValueType>
 Matrix<ValueType> Matrix<ValueType>::Transponed() const {
     Matrix<ValueType> ans(Columns(), Rows());
     MULTITHREAD_VOID(
-        for (size_t j = 0; j < ans[i].size(); ++j) {
-            ans[i][j] = contents[j][i];
+        for (size_t j = 0; j != Columns(); ++j) {
+            ans[j][i] = contents[i][j];
         }
     )
     return ans;
@@ -315,6 +317,18 @@ template<typename ValueType>
 typename Matrix<ValueType>::const_iterator Matrix<ValueType>::end() const {
     return contents.cend();
 }
+template<typename ValueType>
+Matrix<ValueType>& Matrix<ValueType>::Pow(size_t pow) const {
+    Matrix<ValueType> ans = Unit(Columns()), mult(*this);
+    while (pow != 0LL) {
+        if (pow & 1ULL) {
+            ans *= mult;
+        }
+        mult *= mult;
+        pow >>= 1ULL;
+    }
+    return ans;
+}
 
 template<typename ValueType>
 std::ostream& operator<<(std::ostream& out, const Matrix<ValueType>& mrx) {
@@ -325,4 +339,9 @@ std::ostream& operator<<(std::ostream& out, const Matrix<ValueType>& mrx) {
         out << '\n';
     }
     return out;
+}
+
+template<typename ValueType>
+Matrix<ValueType> operator *(ValueType first, const Matrix<ValueType> &second) {
+    return second * first;
 }
