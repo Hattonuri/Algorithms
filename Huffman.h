@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <iostream>
 #include <memory>
 #include <set>
 #include <string>
@@ -115,7 +116,7 @@ struct PairHasher {
     }
 };
 
-int Arch::compress(std::istream* in, std::ostream* out) {
+int compress(std::istream* in, std::ostream* out) {
     if (in == nullptr || out == nullptr) {
         return Error::WRONG_ARGUMENTS;
     }
@@ -169,7 +170,7 @@ int Arch::compress(std::istream* in, std::ostream* out) {
     return Error::OK;
 }
 
-int Arch::decompress(std::istream* in, std::ostream* out) {
+int decompress(std::istream* in, std::ostream* out) {
     if (in == nullptr || out == nullptr) {
         return Error::WRONG_ARGUMENTS;
     }
