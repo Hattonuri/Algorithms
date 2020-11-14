@@ -126,3 +126,18 @@ template <typename T, typename U>
 struct IsBaseOf<T, U, decltype(TryParse<T>(DeclVal<U>()))> {
     static constexpr bool value = true;
 };
+
+template<typename T>
+class IsConstructible {
+ private:
+    template<typename C_T>
+    static C_T testFun(C_T);
+    template<typename C_T>
+    static bool test(typename EnableIf<sizeof(C_T) == sizeof(testFun(C_T()))>::type*);
+
+    template<typename>
+    static int test( ... );
+
+ public:
+    static constexpr bool value = sizeof(test<T>(nullptr)) == sizeof(bool);
+};
